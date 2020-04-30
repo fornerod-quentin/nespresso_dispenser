@@ -1,6 +1,6 @@
 # nespresso_dispenser
 Auteurs:
-- Quentin Fornerod
+- Fornerod Quentin 
 - Fournier Loïc
 - Rosselli Jasmine
 
