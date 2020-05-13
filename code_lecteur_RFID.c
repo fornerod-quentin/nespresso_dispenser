@@ -9,7 +9,11 @@
 //    V1.00
 //    -----
 //    - initial realise
+//		
+//	Modifications: 
 //
+//  Auteur: Quentin Fornerod || Date: 07.05.2020 || Changement de la communication UART vers i2C
+//  Auteur: Quentin Fornerod || Date: 12.05.2020 || Affectation des GPIOs en copiant l'etat des LEDs
 // ******************************************************************
 
 #include "twn4.sys.h"
@@ -45,36 +49,40 @@ void ConfigSetTagTypes(void)
     	SetTagTypes(LFTAGTYPES,HFTAGTYPES);
 }
 
-
-// ******************************************************************
-
 int main(void)
 {
+	/* La communication étant de type I2C, ces éléments ne sont plus nécessaires
 	// UART Communication
 	SetHostChannel(CHANNEL_COM1);
-	
 	// Show the startup message
     if (GetHostChannel() == CHANNEL_COM1)
-    {
+		{
         // A V24 device is writing the version at startup
         HostWriteVersion();
         HostWriteChar('\r');
-    }
+		}*/
+	SetHostChannel(CHANNEL_I2C);
+	I2CInit(I2CMODE_SLAVE | 0x30 | I2CMODE_CHANNEL);
+	
 	// Set tag types
 	ConfigSetTagTypes();
-    	
+    //Init des GPIO 2 et 3
+	GPIOConfigureOutputs(GPIO2,GPIO_PUPD_PULLDOWN,GPIO_OTYPE_PUSHPULL);
+	GPIOConfigureOutputs(GPIO3,GPIO_PUPD_PULLDOWN,GPIO_OTYPE_PUSHPULL);
     // Init LEDs
     LEDInit(REDLED | GREENLED);
     // Turn on green LED
     LEDOn(GREENLED);
+	GPIOSetBits(GPIO2);//vert
     // Turn off red LED
     LEDOff(REDLED);
+	GPIOClearBits(GPIO3);
     // Make some noise at startup at low volume
     SetVolume(30);
     BeepLow();
     BeepHigh();
     // Continue with maximum  volume
-    SetVolume(100);
+    SetVolume(80);
     
     // No transponder found up to now
     LastTagType = NOTAG;
@@ -96,13 +104,15 @@ int main(void)
 				BeepHigh();
 				// Turn off the green LED
 				LEDOff(GREENLED);
+				GPIOClearBits(GPIO2);
 				// Let the red one blink, start with on-state
 				LEDOn(REDLED);
+				GPIOSetBits(GPIO3);
 				LEDBlink(REDLED,500,500);
 				// Send UID
 				HostWriteHex(ID,IDBitCnt,(IDBitCnt+7)/8*2);
 				// Send CR
-				HostWriteChar('\r');
+				//HostWriteChar('\r');
 			}
 			// Start a timeout of two seconds
 			StartTimer(2000);
@@ -110,7 +120,9 @@ int main(void)
         if (TestTimer())
         {
             LEDOn(GREENLED);
+			GPIOSetBits(GPIO2);
             LEDOff(REDLED);
+			GPIOClearBits(GPIO3);
             LastTagType = NOTAG;
         }
     }
