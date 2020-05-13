@@ -6,7 +6,8 @@ Auteurs:
 
 Ce répertoire contient l'ensemble des codes sources utilisés et réalisés pour la machine "Nespresso Dispenser".
 
-Le lecteur RFID utilisé pour les tests est le T4DT-BB2BEL du fabricant Elatec et la communication se fait via un bus série
+Le lecteur RFID utilisé pour les tests est le T4DT-BB2BEL du fabricant Elatec et la communication se fait via un bus I2C.
+Les ressources de développement du lecteur sont disponibles sur le lien suivant: http://elatec.com/devpack322
 
 Différents microcontrôleurs ont été utilisés pour les tests:
 - Un Arduino Uno pour le lecteur RFID
